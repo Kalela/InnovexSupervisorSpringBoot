@@ -2,6 +2,7 @@ package com.kalela.InnovexSolutions.service;
 
 import com.google.cloud.firestore.CollectionReference;
 import com.kalela.InnovexSolutions.data.model.Task;
+import com.kalela.InnovexSolutions.util.Colors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +61,7 @@ public class ScheduledTasks {
         task.setApplication_time(new Timestamp(0));
         task.setId(taskId);
         task.setRunning(true);
+        task.setColor(Colors.startColors.get(random.nextInt(Colors.startColors.size())));
 
         tasksRef.document().set(task);
 
@@ -84,6 +86,7 @@ public class ScheduledTasks {
         task.setApplication_time(new Timestamp(0));
         task.setId(taskId);
         task.setRunning(true);
+        task.setColor(Colors.stopColors.get(random.nextInt(Colors.stopColors.size())));
 
         tasksRef.document().set(task);
 
@@ -101,6 +104,7 @@ public class ScheduledTasks {
         task.setApplication_time(new Timestamp(0));
         task.setId(taskId);
         task.setRunning(true);
+        task.setColor(Colors.reportColors.get(random.nextInt(Colors.reportColors.size())));
 
         tasksRef.document().set(task);
     }

@@ -11,4 +11,5 @@ public class TaskDto {
     private Timestamp application_time;
     private String task_definition;
     private boolean isRunning;
+    private int color;
 }
