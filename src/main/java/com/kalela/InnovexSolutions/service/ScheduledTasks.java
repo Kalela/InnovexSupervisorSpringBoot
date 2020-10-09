@@ -43,6 +43,10 @@ public class ScheduledTasks {
         Task task = new Task();
         CollectionReference tasksRef = db.getFirestoreDb().collection("tasks");
 
+        tasksRef.listDocuments().forEach(document -> {
+            document.update("running", false);
+        });
+
         upperBound = 21;
         lowerBound = 10;
 
