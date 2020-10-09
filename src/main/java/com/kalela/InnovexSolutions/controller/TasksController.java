@@ -1,5 +1,6 @@
 package com.kalela.InnovexSolutions.controller;
 
+import com.kalela.InnovexSolutions.data.model.Task;
 import com.kalela.InnovexSolutions.service.ScheduledTasks;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +11,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -52,6 +56,38 @@ public class TasksController {
         return response;
     }
 
+    @GetMapping("/running")
+    public ArrayList<Task> getCurrentlyRunningTasks() {
+        Task task = new Task();
+        task.setActual_time(new Timestamp(new Date().getTime()));
+        task.setName("TEST");
+        task.setTask_definition("Stopped " + 0 + " servers");
+        task.setApplication_time(new Timestamp(0));
+        task.setRunning(true);
+
+        ArrayList<Task> array = new ArrayList<>();
+
+        array.add(task);
+
+        return array;
+    }
+
+    @GetMapping("/report")
+    public ArrayList<Task> getReportOfAllTasks() {
+        Task task = new Task();
+        task.setActual_time(new Timestamp(new Date().getTime()));
+        task.setName("TEST");
+        task.setTask_definition("Stopped " + 0 + " servers");
+        task.setApplication_time(new Timestamp(0));
+        task.setRunning(true);
+
+        ArrayList<Task> array = new ArrayList<>();
+
+        array.add(task);
+
+        return array;
+    }
+
     @GetMapping
     public HashMap<String, Integer> getNumberOfTasks() {
         Set<ScheduledTask> setTasks = postProcessor.getScheduledTasks();
@@ -61,4 +97,6 @@ public class TasksController {
 
         return response;
     }
+
+
 }
