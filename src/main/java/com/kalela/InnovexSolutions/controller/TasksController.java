@@ -1,7 +1,12 @@
 package com.kalela.InnovexSolutions.controller;
 
+import com.google.api.core.ApiFuture;
+import com.google.cloud.firestore.*;
 import com.kalela.InnovexSolutions.data.model.Task;
+import com.kalela.InnovexSolutions.dto.model.TaskDto;
+import com.kalela.InnovexSolutions.service.FirebaseInitializer;
 import com.kalela.InnovexSolutions.service.ScheduledTasks;
+import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,14 +17,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/tasks")
 public class TasksController {
+    @Autowired
+    FirebaseInitializer db;
 
     private static final Logger log = LoggerFactory.getLogger(TasksController.class);
 
@@ -55,36 +60,55 @@ public class TasksController {
         return response;
     }
 
+    @SneakyThrows
     @GetMapping("/running")
-    public ArrayList<Task> getCurrentlyRunningTasks() {
-        Task task = new Task();
-        task.setActual_time(new Timestamp(new Date().getTime()));
-        task.setName("TEST");
-        task.setTask_definition("Stopped " + 0 + " servers");
-        task.setApplication_time(new Timestamp(0));
-        task.setRunning(true);
+    public ArrayList<TaskDto> getCurrentlyRunningTasks() {
+        CollectionReference tasksRef = db.getFirestoreDb().collection("tasks");
 
-        ArrayList<Task> array = new ArrayList<>();
+        ApiFuture<QuerySnapshot> future = tasksRef.whereEqualTo("running", true).get();
 
-        array.add(task);
+        List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+
+
+        ArrayList<TaskDto> array = new ArrayList<>();
+
+        for (QueryDocumentSnapshot document : documents) {
+            TaskDto task = document.toObject(TaskDto.class);
+            array.add(task);
+        }
 
         return array;
     }
 
+    @SneakyThrows
     @GetMapping("/report")
-    public ArrayList<Task> getReportOfAllTasks() {
-        Task task = new Task();
-        task.setActual_time(new Timestamp(new Date().getTime()));
-        task.setName("TEST");
-        task.setTask_definition("Stopped " + 0 + " servers");
-        task.setApplication_time(new Timestamp(0));
-        task.setRunning(true);
+    public ArrayList<TaskDto> getReportOfAllTasks() {
+        CollectionReference tasksRef = db.getFirestoreDb().collection("tasks");
 
-        ArrayList<Task> array = new ArrayList<>();
+        ApiFuture<QuerySnapshot> future = tasksRef.get();
 
-        array.add(task);
+        List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+
+        ArrayList<TaskDto> array = new ArrayList<>();
+
+        for (QueryDocumentSnapshot document : documents) {
+            TaskDto task = document.toObject(TaskDto.class);
+            array.add(task);
+        }
 
         return array;
+    }
+
+    @GetMapping("/clear")
+    public HashMap<String, String> removeAllTasks() {
+        HashMap<String, String> response = new HashMap<>();
+        CollectionReference tasksRef = db.getFirestoreDb().collection("tasks");
+
+        tasksRef.listDocuments().forEach(DocumentReference::delete);
+
+
+        response.put("message", "All tasks cleared");
+        return response;
     }
 
     @GetMapping

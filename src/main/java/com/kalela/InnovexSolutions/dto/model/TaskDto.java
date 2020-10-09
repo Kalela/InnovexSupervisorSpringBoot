@@ -1,12 +1,10 @@
-package com.kalela.InnovexSolutions.data.model;
+package com.kalela.InnovexSolutions.dto.model;
 
-
+import com.google.cloud.Timestamp;
 import lombok.Data;
 
-import java.sql.Timestamp;
-
 @Data
-public class Task {
+public class TaskDto {
     private int id;
     private String name;
     private Timestamp actual_time;

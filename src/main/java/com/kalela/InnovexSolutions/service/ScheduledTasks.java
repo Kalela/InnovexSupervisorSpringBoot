@@ -25,6 +25,11 @@ public class ScheduledTasks {
     int upperBound;
     int lowerBound;
     int runningServers;
+    int taskId = 1;
+
+    private static final String START = "START";
+    private static final String STOP = "STOP";
+    private static final String REPORT = "REPORT";
 
     Random random = new Random();
 
@@ -33,10 +38,9 @@ public class ScheduledTasks {
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
     @Async
-    @Scheduled(fixedDelay = 30000, initialDelay = 30000)
+    @Scheduled(fixedDelay = 30000)
     public void startServers() {
         Task task = new Task();
-        String taskName = "START";
         CollectionReference tasksRef = db.getFirestoreDb().collection("tasks");
 
         upperBound = 21;
@@ -47,9 +51,11 @@ public class ScheduledTasks {
         runningServers = runningServers + newInt;
 
         task.setActual_time(new Timestamp(new Date().getTime()));
-        task.setName(taskName);
+        task.setName(START);
         task.setTask_definition("Started " + newInt + " servers");
         task.setApplication_time(new Timestamp(0));
+        task.setId(taskId);
+        task.setRunning(true);
 
         tasksRef.document().set(task);
 
@@ -59,7 +65,6 @@ public class ScheduledTasks {
     @Scheduled(fixedDelay = 40000, initialDelay = 40000)
     public void stopServers() {
         Task task = new Task();
-        String taskName = "STOP";
 
         CollectionReference tasksRef = db.getFirestoreDb().collection("tasks");
 
@@ -70,9 +75,11 @@ public class ScheduledTasks {
         runningServers = runningServers - newInt;
 
         task.setActual_time(new Timestamp(new Date().getTime()));
-        task.setName(taskName);
+        task.setName(STOP);
         task.setTask_definition("Stopped " + newInt + " servers");
         task.setApplication_time(new Timestamp(0));
+        task.setId(taskId);
+        task.setRunning(true);
 
         tasksRef.document().set(task);
 
@@ -82,13 +89,14 @@ public class ScheduledTasks {
     @Scheduled(fixedDelay = 50000, initialDelay = 50000)
     public void reportServers() {
         Task task = new Task();
-        String taskName = "REPORT";
         CollectionReference tasksRef = db.getFirestoreDb().collection("tasks");
 
         task.setActual_time(new Timestamp(new Date().getTime()));
-        task.setName(taskName);
+        task.setName(REPORT);
         task.setTask_definition("Currently running " + runningServers + " servers");
         task.setApplication_time(new Timestamp(0));
+        task.setId(taskId);
+        task.setRunning(true);
 
         tasksRef.document().set(task);
     }
