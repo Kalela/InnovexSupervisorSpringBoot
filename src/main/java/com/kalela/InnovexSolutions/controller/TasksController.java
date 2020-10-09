@@ -31,7 +31,6 @@ public class TasksController {
     @Autowired
     ScheduledTasks scheduledTasks;
 
-
     @GetMapping("/start")
     public HashMap<String, String> startSchedule() {
         HashMap<String, Integer> taskNoMap = getNumberOfTasks();
