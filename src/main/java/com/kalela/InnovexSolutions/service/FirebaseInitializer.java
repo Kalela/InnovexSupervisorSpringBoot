@@ -1,7 +1,6 @@
 package com.kalela.InnovexSolutions.service;
 
 import com.google.auth.oauth2.GoogleCredentials;
-import com.google.auth.oauth2.OAuth2Credentials;
 import com.google.cloud.firestore.Firestore;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
@@ -10,8 +9,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+
 
 @Service
 public class FirebaseInitializer {
