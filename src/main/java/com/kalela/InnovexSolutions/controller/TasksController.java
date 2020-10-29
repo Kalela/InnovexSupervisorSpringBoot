@@ -67,6 +67,8 @@ public class TasksController {
         ApiFuture<QuerySnapshot> future = tasksRef.whereEqualTo("running", true).get();
 
         List<QueryDocumentSnapshot> documents = null;
+
+        ArrayList<Object> array = new ArrayList<>();
         try {
             documents = future.get().getDocuments();
         } catch (InterruptedException e) {
@@ -75,11 +77,9 @@ public class TasksController {
             HashMap<String, String> error = new HashMap<>();
             error.put("message", "An error occured while reading from the database.");
             error.put("error", e.getMessage());
-            return error;
+            array.add(error);
+            return array;
         }
-
-
-        ArrayList<TaskDto> array = new ArrayList<>();
 
         for (QueryDocumentSnapshot document : documents) {
             TaskDto task = document.toObject(TaskDto.class);
@@ -96,6 +96,7 @@ public class TasksController {
         ApiFuture<QuerySnapshot> future = tasksRef.get();
 
         List<QueryDocumentSnapshot> documents = null;
+        ArrayList<Object> array = new ArrayList<>();
         try {
             documents = future.get().getDocuments();
         } catch (InterruptedException e) {
@@ -104,10 +105,11 @@ public class TasksController {
             HashMap<String, String> error = new HashMap<>();
             error.put("message", "An error occured while reading from the database.");
             error.put("error", e.getMessage());
-            return error;
+            array.add(error);
+            return array;
         }
 
-        ArrayList<TaskDto> array = new ArrayList<>();
+
 
         for (QueryDocumentSnapshot document : documents) {
             TaskDto task = document.toObject(TaskDto.class);
