@@ -60,14 +60,23 @@ public class TasksController {
         return response;
     }
 
-    @SneakyThrows
     @GetMapping("/running")
-    public ArrayList<TaskDto> getCurrentlyRunningTasks() {
+    public Object getCurrentlyRunningTasks() {
         CollectionReference tasksRef = db.getFirestoreDb().collection("tasks");
 
         ApiFuture<QuerySnapshot> future = tasksRef.whereEqualTo("running", true).get();
 
-        List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+        List<QueryDocumentSnapshot> documents = null;
+        try {
+            documents = future.get().getDocuments();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            HashMap<String, String> error = new HashMap<>();
+            error.put("message", "An error occured while reading from the database.");
+            error.put("error", e.getMessage());
+            return error;
+        }
 
 
         ArrayList<TaskDto> array = new ArrayList<>();
@@ -80,14 +89,23 @@ public class TasksController {
         return array;
     }
 
-    @SneakyThrows
     @GetMapping("/report")
-    public ArrayList<TaskDto> getReportOfAllTasks() {
+    public Object getReportOfAllTasks() {
         CollectionReference tasksRef = db.getFirestoreDb().collection("tasks");
 
         ApiFuture<QuerySnapshot> future = tasksRef.get();
 
-        List<QueryDocumentSnapshot> documents = future.get().getDocuments();
+        List<QueryDocumentSnapshot> documents = null;
+        try {
+            documents = future.get().getDocuments();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            HashMap<String, String> error = new HashMap<>();
+            error.put("message", "An error occured while reading from the database.");
+            error.put("error", e.getMessage());
+            return error;
+        }
 
         ArrayList<TaskDto> array = new ArrayList<>();
 
@@ -103,8 +121,15 @@ public class TasksController {
     public HashMap<String, String> removeAllTasks() {
         HashMap<String, String> response = new HashMap<>();
         CollectionReference tasksRef = db.getFirestoreDb().collection("tasks");
+        try {
+            tasksRef.listDocuments().forEach(DocumentReference::delete);
+        } catch (Exception e) {
+            HashMap<String, String> error = new HashMap<>();
+            error.put("message", "An error occured while reading from the database.");
+            error.put("error", e.getMessage());
+            return error;
+        }
 
-        tasksRef.listDocuments().forEach(DocumentReference::delete);
 
 
         response.put("message", "All tasks cleared");
